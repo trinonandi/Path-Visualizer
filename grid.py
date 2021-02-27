@@ -1,13 +1,14 @@
 import pygame
 
 # initializing the constants
-CLOSED_COLOR = (255, 218, 218)
-OPEN_COLOR = (172, 120, 255)
+CLOSED_COLOR = (174, 230, 230)
+OPEN_COLOR = (22, 165, 150)
 WALL_COLOR = (128, 128, 128)
+BASE_COLOR = (253, 207, 223)
+START_COLOR = (254, 152, 1)
+GOAL_COLOR = (204, 14, 116)
+PATH_COLOR = (10, 4, 60)
 WHITE = (255, 255, 255)
-START_COLOR = (218, 165, 32)
-GOAL_COLOR = (100, 147, 237)
-PATH_COLOR = (255, 255, 0)
 
 
 class Node:
@@ -26,6 +27,7 @@ class Node:
         draw() method draws a rectangle along the x, y coordinates with ('width' x 'width') dimension
         and fills with the 'color'
     """
+
     def __init__(self, row, col, width, total_rows):
 
         self.row = row
@@ -38,7 +40,7 @@ class Node:
         self.y = col * width
 
         self.neighbours = []
-        self.color = WHITE
+        self.color = BASE_COLOR
 
     def get_pos(self):
         return self.row, self.col
@@ -55,8 +57,11 @@ class Node:
     def is_end(self):
         return self.color == GOAL_COLOR
 
+    def is_wall(self):
+        return self.color == WALL_COLOR
+
     def reset(self):
-        self.color = WHITE
+        self.color = BASE_COLOR
 
     def make_start(self):
         self.color = START_COLOR
@@ -79,6 +84,20 @@ class Node:
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.width))
 
+    def update_neighbour(self, grid):
+
+        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_wall():  # bottom
+            self.neighbours.append(grid[self.row + 1][self.col])
+
+        if self.row > 0 and not grid[self.row - 1][self.col].is_wall():  # top
+            self.neighbours.append(grid[self.row - 1][self.col])
+
+        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_wall():  # right
+            self.neighbours.append(grid[self.row][self.col + 1])
+
+        if self.col > 0 and not grid[self.row][self.col - 1].is_wall():  # bottom
+            self.neighbours.append(grid[self.row][self.col - 1])
+
     def __lt__(self, other):
         # less than method used to compare objects
         return False
@@ -92,9 +111,9 @@ def make_grid(rows, width):
     :return: a 2d (row x row) length list of Node objects
     """
     grid = []
-    gap = width // rows     # gives the dimension of each node square. 700 // 20 = 35 => each node = 35x35 px
+    gap = width // rows  # gives the dimension of each node square. 700 // 20 = 35 => each node = 35x35 px
     for i in range(rows):
-        grid.append([])     # adding column list
+        grid.append([])  # adding column list
         for j in range(rows):
             node = Node(i, j, gap, rows)
             grid[i].append(node)
@@ -113,10 +132,10 @@ def draw_grid_lines(win, rows, width):
     gap = width // rows
     for i in range(rows):
         # draws the top and bottom horizontal lines of each cell
-        pygame.draw.line(win, WALL_COLOR, (0, i * gap), (width, i * gap))
+        pygame.draw.line(win, WHITE, (0, i * gap), (width, i * gap))
         for j in range(rows):
             # draws the left and right vertical lines of each cell
-            pygame.draw.line(win, WALL_COLOR, (j * gap, 0), (j * gap, width))
+            pygame.draw.line(win, WHITE, (j * gap, 0), (j * gap, width))
 
 
 def draw(win, grid, rows, width):
@@ -128,14 +147,14 @@ def draw(win, grid, rows, width):
     :param width: width of the pygame window
     :return: None
     """
-    win.fill(WHITE)     # initiates the screen
+    win.fill(BASE_COLOR)  # initiates the screen
 
-    for row in grid:    # draws the cells(nodes)
+    for row in grid:  # draws the cells(nodes)
         for node in row:
             node.draw(win)
 
-    draw_grid_lines(win, rows, width)   # draws the grid lines
-    pygame.display.update()     # updates pygame window
+    draw_grid_lines(win, rows, width)  # draws the grid lines
+    pygame.display.update()  # updates pygame window
 
 
 def get_clicked_node(pos, rows, width):
