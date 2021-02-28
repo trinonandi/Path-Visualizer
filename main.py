@@ -3,7 +3,7 @@ import grid
 import algorithms
 
 # initializing the constants
-FPS = 60  # the pygame FPS
+FPS = 30  # the pygame FPS
 ROW = 35  # number of rows and cols of the grid as it is a square grid
 WIDTH = 700  # screen width of the grid
 WIN = pygame.display.set_mode((WIDTH, WIDTH))  # pygame windows
@@ -55,7 +55,8 @@ def main(win, width):
                         for node in row:
                             node.update_neighbour(main_grid)
 
-                    found = algorithms.a_star(lambda: grid.draw(win, main_grid, rows, width), main_grid, start, end)
+                    # found = algorithms.a_star(lambda: grid.draw(win, main_grid, rows, width), main_grid, start, end)
+                    found = algorithms.breadth_first_search(lambda: grid.draw(win, main_grid, rows, width), start, end)
                     if not found:
                         print("Not found")
 
