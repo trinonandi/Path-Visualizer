@@ -4,7 +4,7 @@ import algorithms
 
 # initializing the constants
 FPS = 30  # the pygame FPS
-ROW = 28  # number of rows and cols of the grid as it is a square grid
+ROW = 25  # number of rows and cols of the grid as it is a square grid
 WIDTH = 700  # screen width of the grid
 WIN = pygame.display.set_mode((WIDTH, WIDTH))  # pygame windows
 
@@ -16,6 +16,8 @@ def main(win, width):
 
     start = None  # holds the start node
     end = None  # holds the end node
+
+    algo_started = False
 
     run = True
     while run:
@@ -50,17 +52,49 @@ def main(win, width):
                     end = None
 
             if event.type == pygame.KEYDOWN:
+                if (event.key == pygame.K_LEFT or event.key == pygame.K_UP) and not algo_started:
+                    # decrease the grid size
+                    if rows == 25:
+                        rows -= 5
+                    elif rows == 35:
+                        rows -= 10
+                    else:
+                        continue
+                    start = None
+                    end = None
+                    main_grid = grid.make_grid(rows, width)
+
+                if (event.key == pygame.K_RIGHT or event.key == pygame.K_DOWN) and not algo_started:
+                    # increase the grid size
+                    if rows == 25:
+                        rows += 10
+                    elif rows == 20:
+                        rows += 5
+                    else:
+                        continue
+
+                    start = None
+                    end = None
+                    main_grid = grid.make_grid(rows, width)
+
                 if event.key == pygame.K_SPACE and start and end:
+                    # start algorithm
+                    algo_started = True
                     for row in main_grid:
                         for node in row:
                             node.update_neighbour(main_grid)
 
                     # found = algorithms.a_star(lambda: grid.draw(win, main_grid, rows, width), main_grid, start, end)
-                    found = algorithms.breadth_first_search(lambda: grid.draw(win, main_grid, rows, width), start, end)
+
+                    # found = algorithms.breadth_first_search(lambda: grid.draw(win, main_grid, rows, width), start, end)
+
+                    found = algorithms.depth_first_search(lambda: grid.draw(win, main_grid, rows, width), start, end)
+
                     if not found:
                         print("Not found")
 
-                if event.key == pygame.K_r:     # reset the grid
+                if event.key == pygame.K_r:  # reset the grid
+                    algo_started = False
                     start = None
                     end = None
                     main_grid = grid.make_grid(rows, width)

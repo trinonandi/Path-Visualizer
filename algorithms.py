@@ -55,10 +55,10 @@ def a_star(draw, grid, start, end):
             temp_g_score = g_score[current] + 1
             if temp_g_score < g_score[neighbour]:  # making neighbour a path node
                 path_dict[neighbour] = current
-                g_score[neighbour] = temp_g_score   # g(x)
-                f_score[neighbour] = temp_g_score + h(neighbour.get_pos(), end.get_pos())   # f(x) = g(x) + h(x)
+                g_score[neighbour] = temp_g_score  # g(x)
+                f_score[neighbour] = temp_g_score + h(neighbour.get_pos(), end.get_pos())  # f(x) = g(x) + h(x)
 
-                if neighbour not in open_set:   # opening the neighbour
+                if neighbour not in open_set:  # opening the neighbour
                     count += 1
                     heap.put((f_score[neighbour], count, neighbour))
                     open_set.add(neighbour)
@@ -87,6 +87,13 @@ def reconstruct_path(path_dict, current, draw):
 
 
 def breadth_first_search(draw, start, end):
+    """
+    a function to evaluate BFS algorithm
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
+    """
     queue = [start]
     path_dict = {}
     open_list = []
@@ -102,13 +109,15 @@ def breadth_first_search(draw, start, end):
             start.make_start()
             return True
 
-        for neighbour in current.neighbours:
+        for neighbour in current.neighbours:  # iterating over neighbours
             if current not in queue:
+                # opening a neighbour
                 if neighbour in open_list:
+                    # if neighbour is already opened, then no need to open it anymore
                     continue
-                path_dict[neighbour] = current
+                path_dict[neighbour] = current  # making current as parent of all neighbours
                 queue.append(neighbour)
-                if neighbour != end and neighbour != start:
+                if neighbour != start and neighbour != end:
                     neighbour.make_open()
                     open_list.append(neighbour)
 
@@ -116,11 +125,65 @@ def breadth_first_search(draw, start, end):
         if current != start:
             current.make_closed()
 
+    return False
 
-def animate(path_list, start, end, draw):
+
+def animate(path_dict, start, end, draw):
+    """
+    a function that animates the path by backtracking the path_dict
+    :param path_dict: a dictionary that holds the node as key and its parent as value
+    :param start: starting node
+    :param end: goal node
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :return: None
+    """
     path = [end]
     while path[-1] != start:
-        node = path_list[path[-1]]
+        node = path_dict[path[-1]]
         path.append(node)
         node.make_path()
         draw()
+
+
+def depth_first_search(draw, start, end):
+    """
+    a function to evaluate DFS algorithm
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
+    """
+    stack = [start]
+    path_dict = {}
+    open_list = []
+
+    while len(stack) > 0:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
+        current = stack.pop()
+
+        if current == end:
+            animate(path_dict, start, end, draw)
+            end.make_end()
+            start.make_start()
+            return True
+
+        for neighbour in current.neighbours:    # iterating over neighbours
+            if current not in stack:
+                # opening a neighbour
+                if neighbour in open_list:
+                    # if neighbour is already opened, then no need to open it anymore
+                    continue
+                path_dict[neighbour] = current  # making current as parent of all neighbours
+                stack.append(neighbour)
+                if neighbour != start and neighbour != end:
+                    neighbour.make_open()
+                    open_list.append(neighbour)
+
+        draw()
+        if current != start:
+            current.make_closed()
+
+    return False
