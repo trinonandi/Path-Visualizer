@@ -4,7 +4,8 @@ import pygame
 
 def h(p1, p2):
     """
-    heuristic function that calculates the manhattan distance
+    heuristic function h(x) that calculates the manhattan distance
+    for f(x) = g(x) + h(x)
     :param p1: point 1 having (x,y) coordinates
     :param p2: point 2 having (x,y) coordinates
     :return: the manhattan distance between them
@@ -52,12 +53,12 @@ def a_star(draw, grid, start, end):
 
         for neighbour in current.neighbours:
             temp_g_score = g_score[current] + 1
-            if temp_g_score < g_score[neighbour]:  # open the neighbour
+            if temp_g_score < g_score[neighbour]:  # making neighbour a path node
                 path_dict[neighbour] = current
-                g_score[neighbour] = temp_g_score
-                f_score[neighbour] = temp_g_score + h(neighbour.get_pos(), end.get_pos())
+                g_score[neighbour] = temp_g_score   # g(x)
+                f_score[neighbour] = temp_g_score + h(neighbour.get_pos(), end.get_pos())   # f(x) = g(x) + h(x)
 
-                if neighbour not in open_set:
+                if neighbour not in open_set:   # opening the neighbour
                     count += 1
                     heap.put((f_score[neighbour], count, neighbour))
                     open_set.add(neighbour)
@@ -87,7 +88,8 @@ def reconstruct_path(path_dict, current, draw):
 
 def breadth_first_search(draw, start, end):
     queue = [start]
-    parent = {}
+    path_dict = {}
+    open_list = []
     while len(queue) > 0:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -95,17 +97,20 @@ def breadth_first_search(draw, start, end):
 
         current = queue.pop(0)
         if current == end:
-            animate(parent, start, end, draw)
+            animate(path_dict, start, end, draw)
             end.make_end()
             start.make_start()
             return True
 
         for neighbour in current.neighbours:
             if current not in queue:
-                parent[neighbour] = current
+                if neighbour in open_list:
+                    continue
+                path_dict[neighbour] = current
                 queue.append(neighbour)
-                if current != start:
-                    current.make_open()
+                if neighbour != end and neighbour != start:
+                    neighbour.make_open()
+                    open_list.append(neighbour)
 
         draw()
         if current != start:

@@ -4,7 +4,7 @@ import algorithms
 
 # initializing the constants
 FPS = 30  # the pygame FPS
-ROW = 35  # number of rows and cols of the grid as it is a square grid
+ROW = 28  # number of rows and cols of the grid as it is a square grid
 WIDTH = 700  # screen width of the grid
 WIN = pygame.display.set_mode((WIDTH, WIDTH))  # pygame windows
 
