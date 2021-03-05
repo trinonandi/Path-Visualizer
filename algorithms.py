@@ -1,6 +1,8 @@
 from queue import PriorityQueue
 import pygame
 
+CLOCK_DELAY = 13
+
 
 def h(p1, p2):
     """
@@ -64,6 +66,7 @@ def a_star(draw, grid, start, end):
                     open_set.add(neighbour)
                     neighbour.make_open()
 
+        pygame.time.delay(CLOCK_DELAY)
         draw()
 
         if current != start:
@@ -83,6 +86,7 @@ def reconstruct_path(path_dict, current, draw):
     while current in path_dict:
         current = path_dict[current]
         current.make_path()
+        pygame.time.delay(CLOCK_DELAY)
         draw()
 
 
@@ -121,6 +125,7 @@ def breadth_first_search(draw, start, end):
                     neighbour.make_open()
                     open_list.append(neighbour)
 
+        pygame.time.delay(CLOCK_DELAY)
         draw()
         if current != start:
             current.make_closed()
@@ -142,6 +147,7 @@ def animate(path_dict, start, end, draw):
         node = path_dict[path[-1]]
         path.append(node)
         node.make_path()
+        pygame.time.delay(CLOCK_DELAY)
         draw()
 
 
@@ -170,7 +176,7 @@ def depth_first_search(draw, start, end):
             start.make_start()
             return True
 
-        for neighbour in current.neighbours:    # iterating over neighbours
+        for neighbour in current.neighbours:  # iterating over neighbours
             if current not in stack:
                 # opening a neighbour
                 if neighbour in open_list:
@@ -182,6 +188,7 @@ def depth_first_search(draw, start, end):
                     neighbour.make_open()
                     open_list.append(neighbour)
 
+        pygame.time.delay(CLOCK_DELAY)
         draw()
         if current != start:
             current.make_closed()
