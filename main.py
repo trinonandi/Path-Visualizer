@@ -60,6 +60,7 @@ def main_menu():
         button_dfs = Button(50, 100, 200, 50, "DFS")
         button_bfs = Button(50, 200, 200, 50, "BFS")
         button_astar = Button(50, 300, 200, 50, "A* Search")
+        button_greedy = Button(50, 400, 200, 50, "Best First")
 
         if button_dfs.rectangle.collidepoint((mx, my)):
             button_dfs.color = BUTTON_HOVER_COLOR
@@ -73,10 +74,15 @@ def main_menu():
             button_astar.color = BUTTON_HOVER_COLOR
             if click:
                 game(WIN, WIDTH, algorithm=button_astar.text)
+        if button_greedy.rectangle.collidepoint((mx, my)):
+            button_greedy.color = BUTTON_HOVER_COLOR
+            if click:
+                game(WIN, WIDTH, algorithm=button_greedy.text)
 
         button_dfs.draw_button()
         button_bfs.draw_button()
         button_astar.draw_button()
+        button_greedy.draw_button()
 
         click = False
         for event in pygame.event.get():
@@ -181,6 +187,9 @@ def game(win, width, algorithm):
                     elif algorithm == "DFS":
                         found = algorithms.depth_first_search(lambda: grid.draw(win, main_grid, rows, width), start,
                                                               end)
+                    elif algorithm == "Best First":
+                        found = found = algorithms.greedy_best_first(lambda: grid.draw(win, main_grid, rows, width),
+                                                                     main_grid, start, end)
 
                     if not found:
                         print("Not found")

@@ -7,7 +7,6 @@ CLOCK_DELAY = 13
 def h(p1, p2):
     """
     heuristic function h(x) that calculates the manhattan distance
-    for f(x) = g(x) + h(x)
     :param p1: point 1 having (x,y) coordinates
     :param p2: point 2 having (x,y) coordinates
     :return: the manhattan distance between them
@@ -20,6 +19,9 @@ def h(p1, p2):
 def a_star(draw, grid, start, end):
     """
     a function to evaluate the A* search algorithm
+    it is an informed search algorithm with f(x) = g(x) + h(x) where g(x) is the path cost
+    we will use a heap to sort the node with respect to the f(x) score
+    it guarantees the shortest path and is a very efficient algorithm
     :param draw: a function that refreshes the pygame window every time a node's color is changed
     :param grid: the list representation of the graph
     :param start: starting node
@@ -42,6 +44,7 @@ def a_star(draw, grid, start, end):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                exit(0)
 
         current = heap.get()[2]  # returns the Node object from the tuple
         open_set.remove(current)
@@ -93,6 +96,9 @@ def reconstruct_path(path_dict, current, draw):
 def breadth_first_search(draw, start, end):
     """
     a function to evaluate BFS algorithm
+    it is a blind search algorithm
+    we will use a queue to implement it
+    it guarantees shortest path
     :param draw: a function that refreshes the pygame window every time a node's color is changed
     :param start: starting node
     :param end: goal node
@@ -154,6 +160,9 @@ def animate(path_dict, start, end, draw):
 def depth_first_search(draw, start, end):
     """
     a function to evaluate DFS algorithm
+    it is a blind search algorithm
+    we will use stack to implement it
+    it does not guarantee shortest path
     :param draw: a function that refreshes the pygame window every time a node's color is changed
     :param start: starting node
     :param end: goal node
@@ -190,6 +199,61 @@ def depth_first_search(draw, start, end):
 
         pygame.time.delay(CLOCK_DELAY)
         draw()
+        if current != start:
+            current.make_closed()
+
+    return False
+
+
+def greedy_best_first(draw, grid, start, end):
+    """
+    a function to implement greedy best first search algorithm
+    it is an informed search algorithm with f(x) = h(x)
+    we will implement it using a heap where the nodes will be sorted with respect to lowest heuristic score
+    it is called greedy because it always chooses the node with lowest heuristic score
+    it does not guarantee shortest path
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :param grid: the list representation of the graph
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
+    """
+    heap = PriorityQueue()
+    heap.put((0, start))
+    open_list = []
+    path_dict = dict()
+
+    f_score = {node: float("inf") for row in grid for node in row}
+    f_score[start] = h(start.get_pos(), end.get_pos())
+
+    while not heap.empty():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit(0)
+
+        current = heap.get()[1]  # returns the Node object from the tuple
+
+        if current == end:  # goal node found
+            animate(path_dict, start, end, draw)
+            # remaking the start and end node as they will be removed by reconstruct_path()
+            end.make_end()
+            start.make_start()
+            return True
+
+        for neighbour in current.neighbours:
+            if neighbour in open_list:
+                continue
+            path_dict[neighbour] = current
+            if neighbour != start:
+                f_score[neighbour] = h(neighbour.get_pos(), end.get_pos())  # f(x) = g(x) + h(x)
+                heap.put((f_score[neighbour], neighbour))
+                open_list.append(neighbour)
+                neighbour.make_open()
+
+        pygame.time.delay(CLOCK_DELAY)
+        draw()
+
         if current != start:
             current.make_closed()
 
