@@ -7,6 +7,8 @@ from pygame.locals import *
 # initiating pygame
 pygame.init()
 pygame.display.set_caption('Visualizer')
+icon = pygame.image.load('assets/icon.ico')
+pygame.display.set_icon(icon)
 
 # initializing the constants
 FPS = 30  # the pygame FPS
