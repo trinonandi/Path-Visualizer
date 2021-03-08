@@ -15,8 +15,8 @@ FPS = 30  # the pygame FPS
 ROW = 25  # number of rows and cols of the grid as it is a square grid
 WIDTH = 700  # screen width of the grid
 WIN = pygame.display.set_mode((WIDTH, WIDTH))  # pygame windows
-FONT = pygame.font.SysFont('comicsans', 30)     # game font
-MAIN_CLOCK = pygame.time.Clock()    # main clock
+FONT = pygame.font.SysFont('comicsans', 30)  # game font
+MAIN_CLOCK = pygame.time.Clock()  # main clock
 
 # menu colors
 BUTTON_COLOR = (10, 4, 60)
@@ -51,8 +51,22 @@ def draw_text(text, local_font, color, surface, x, y):
     surface.blit(text_obj, text_rect)
 
 
+def popup(message):
+    run = True
+    while run:
+        WIN.fill(MENU_BACK_COLOR)
+        for event in pygame.event.get():
+            if event.type == KEYDOWN and event.key == K_ESCAPE:
+                run = False
+        rectangle = pygame.Rect(200, 200, 100, 100)
+        text = FONT.render(message, True, (255, 255, 255))
+        pygame.draw.rect(WIN, BUTTON_COLOR, rectangle)
+        WIN.blit(text, (200 + (100 / 2 - text.get_width() / 2), 200 + (100 / 2 - text.get_height() / 2)))
+
+
 def main_menu():
     click = False
+    message = None
     while True:
         WIN.fill(MENU_BACK_COLOR)
         draw_text('Choose Algorithm', FONT, BUTTON_COLOR, WIN, 50, 50)
@@ -63,28 +77,39 @@ def main_menu():
         button_bfs = Button(50, 200, 200, 50, "BFS")
         button_astar = Button(50, 300, 200, 50, "A* Search")
         button_greedy = Button(50, 400, 200, 50, "Best First")
+        button_bidiectional = Button(300, 100, 200, 50, "Bi-Directional")
 
         if button_dfs.rectangle.collidepoint((mx, my)):
             button_dfs.color = BUTTON_HOVER_COLOR
             if click:
-                game(WIN, WIDTH, algorithm=button_dfs.text)
+                message = game(WIN, WIDTH, algorithm=button_dfs.text)
         if button_bfs.rectangle.collidepoint((mx, my)):
             button_bfs.color = BUTTON_HOVER_COLOR
             if click:
-                game(WIN, WIDTH, algorithm=button_bfs.text)
+                message = game(WIN, WIDTH, algorithm=button_bfs.text)
         if button_astar.rectangle.collidepoint((mx, my)):
             button_astar.color = BUTTON_HOVER_COLOR
             if click:
-                game(WIN, WIDTH, algorithm=button_astar.text)
+                message = game(WIN, WIDTH, algorithm=button_astar.text)
         if button_greedy.rectangle.collidepoint((mx, my)):
             button_greedy.color = BUTTON_HOVER_COLOR
             if click:
-                game(WIN, WIDTH, algorithm=button_greedy.text)
+                message = game(WIN, WIDTH, algorithm=button_greedy.text)
+
+        if button_bidiectional.rectangle.collidepoint((mx, my)):
+            button_bidiectional.color = BUTTON_HOVER_COLOR
+            if click:
+                message = game(WIN, WIDTH, algorithm=button_bidiectional.text)
 
         button_dfs.draw_button()
         button_bfs.draw_button()
         button_astar.draw_button()
         button_greedy.draw_button()
+        button_bidiectional.draw_button()
+
+        if message is not None:
+            text = "Search Result : " + message
+            draw_text(text, FONT, BUTTON_COLOR, WIN, 50, 650)
 
         click = False
         for event in pygame.event.get():
@@ -112,7 +137,6 @@ def game(win, width, algorithm):
     end = None  # holds the end node
 
     algo_started = False
-
     run = True  # represents if the game loop is running or not
     while run:
         clock.tick(FPS)
@@ -190,11 +214,18 @@ def game(win, width, algorithm):
                         found = algorithms.depth_first_search(lambda: grid.draw(win, main_grid, rows, width), start,
                                                               end)
                     elif algorithm == "Best First":
-                        found = found = algorithms.greedy_best_first(lambda: grid.draw(win, main_grid, rows, width),
-                                                                     main_grid, start, end)
+                        found = algorithms.greedy_best_first(lambda: grid.draw(win, main_grid, rows, width),
+                                                             main_grid, start, end)
+
+                    elif algorithm == "Bi-Directional":
+                        found = algorithms.bidirectional_search(lambda: grid.draw(win, main_grid, rows, width),
+                                                                main_grid, start, end)
 
                     if not found:
                         print("Not found")
+                        message = "Path Not Found"
+                        pygame.time.delay(1000)
+                        return message
 
                 if event.key == pygame.K_r:  # reset the grid
                     algo_started = False

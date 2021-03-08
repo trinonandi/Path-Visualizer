@@ -1,7 +1,8 @@
 from queue import PriorityQueue
+import bidirectional
 import pygame
 
-CLOCK_DELAY = 13
+CLOCK_DELAY = 15
 
 
 def h(p1, p2):
@@ -111,6 +112,7 @@ def breadth_first_search(draw, start, end):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                exit(0)
 
         current = queue.pop(0)
         if current == end:
@@ -176,6 +178,7 @@ def depth_first_search(draw, start, end):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                exit(0)
 
         current = stack.pop()
 
@@ -258,3 +261,8 @@ def greedy_best_first(draw, grid, start, end):
             current.make_closed()
 
     return False
+
+
+def bidirectional_search(draw, grid, start, end):
+    bs = bidirectional.BidirectionalSearch(draw, grid, start, end)
+    return bs.search()
