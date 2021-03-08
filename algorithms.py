@@ -264,5 +264,37 @@ def greedy_best_first(draw, grid, start, end):
 
 
 def bidirectional_search(draw, grid, start, end):
+    """
+    a function to implement Blind Bidirectional Search by BFS algorithm
+    it is uninformed and uses BFS from both the goal and start node simultaneously
+    it stops when the start search path and goal search path collides
+    it guarantees shortest path
+
+    It uses the bidirectional.py module's BidirectionalSearch class
+    The actual algorithm implementation is written in that module
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :param grid: the list representation of the graph
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
+    """
     bs = bidirectional.BidirectionalSearch(draw, grid, start, end)
     return bs.search()
+
+
+def bidirectional_a_star_search(draw, grid, start, end):
+    """
+    a function to implement bidirectional A* search algorithm
+    it uses heuristic function so it is informed and takes the best of A* search and bidirectional search
+    it guarantees shortest path
+
+    It uses the bidirectional.py module's InformedBidirectionalSearch class
+    The actual algorithm implementation is written in that module
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :param grid: the list representation of the graph
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
+    """
+    bs = bidirectional.InformedBidirectionalSearch(draw, grid, start, end)
+    return bs.a_star_search()

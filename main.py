@@ -51,19 +51,6 @@ def draw_text(text, local_font, color, surface, x, y):
     surface.blit(text_obj, text_rect)
 
 
-def popup(message):
-    run = True
-    while run:
-        WIN.fill(MENU_BACK_COLOR)
-        for event in pygame.event.get():
-            if event.type == KEYDOWN and event.key == K_ESCAPE:
-                run = False
-        rectangle = pygame.Rect(200, 200, 100, 100)
-        text = FONT.render(message, True, (255, 255, 255))
-        pygame.draw.rect(WIN, BUTTON_COLOR, rectangle)
-        WIN.blit(text, (200 + (100 / 2 - text.get_width() / 2), 200 + (100 / 2 - text.get_height() / 2)))
-
-
 def main_menu():
     click = False
     message = None
@@ -73,11 +60,12 @@ def main_menu():
 
         mx, my = pygame.mouse.get_pos()
 
-        button_dfs = Button(50, 100, 200, 50, "DFS")
-        button_bfs = Button(50, 200, 200, 50, "BFS")
-        button_astar = Button(50, 300, 200, 50, "A* Search")
-        button_greedy = Button(50, 400, 200, 50, "Best First")
-        button_bidiectional = Button(300, 100, 200, 50, "Bi-Directional")
+        button_dfs = Button(50, 100, 250, 50, "DFS")
+        button_bfs = Button(50, 200, 250, 50, "BFS")
+        button_astar = Button(50, 300, 250, 50, "A* Search")
+        button_greedy = Button(50, 400, 250, 50, "Best First")
+        button_bidiectional = Button(400, 100, 250, 50, "Bidirectional")
+        button_informed_bi = Button(400, 200, 250, 50, "Bidirectional A*")
 
         if button_dfs.rectangle.collidepoint((mx, my)):
             button_dfs.color = BUTTON_HOVER_COLOR
@@ -101,11 +89,17 @@ def main_menu():
             if click:
                 message = game(WIN, WIDTH, algorithm=button_bidiectional.text)
 
+        if button_informed_bi.rectangle.collidepoint((mx, my)):
+            button_informed_bi.color = BUTTON_HOVER_COLOR
+            if click:
+                message = game(WIN, WIDTH, algorithm=button_informed_bi.text)
+
         button_dfs.draw_button()
         button_bfs.draw_button()
         button_astar.draw_button()
         button_greedy.draw_button()
         button_bidiectional.draw_button()
+        button_informed_bi.draw_button()
 
         if message is not None:
             text = "Search Result : " + message
@@ -217,9 +211,12 @@ def game(win, width, algorithm):
                         found = algorithms.greedy_best_first(lambda: grid.draw(win, main_grid, rows, width),
                                                              main_grid, start, end)
 
-                    elif algorithm == "Bi-Directional":
+                    elif algorithm == "Bidirectional":
                         found = algorithms.bidirectional_search(lambda: grid.draw(win, main_grid, rows, width),
                                                                 main_grid, start, end)
+                    elif algorithm == "Bidirectional A*":
+                        found = algorithms.bidirectional_a_star_search(lambda: grid.draw(win, main_grid, rows, width),
+                                                                       main_grid, start, end)
 
                     if not found:
                         print("Not found")
