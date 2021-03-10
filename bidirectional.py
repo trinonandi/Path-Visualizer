@@ -3,6 +3,7 @@ It contains all the details necessary for performing both informed and uninforme
 It acts as an auxiliary module for the following functions in algorithms.py:
     bidirectional_search()
     bidirectional_a_star_search()
+    bidirectional_greedy_search()
 """
 import pygame
 from queue import PriorityQueue
@@ -277,3 +278,58 @@ class InformedBidirectionalSearch:
             node.make_path()
             pygame.time.delay(CLOCK_DELAY)
             self.draw()
+
+    def greedy_helper_algo(self, direction="forward"):
+        if direction == "forward":
+            current = self.fwd_heap.get()[2]
+            for neighbour in current.neighbours:
+                if neighbour in self.fwd_open_list:
+                    continue
+
+                self.fwd_path_dict[neighbour] = current
+                if neighbour != self.start:
+                    self.fwd_count += 1
+                    self.fwd_f_score[neighbour] = h(neighbour.get_pos(), self.end.get_pos())
+                    self.fwd_heap.put((self.fwd_f_score[neighbour], self.fwd_count, neighbour))
+                    self.fwd_open_list.append(neighbour)
+                    neighbour.make_open()
+
+            pygame.time.delay(CLOCK_DELAY)
+            self.draw()
+            if current != self.start:
+                current.make_closed()
+
+        else:
+            current = self.bkwd_heap.get()[2]
+
+            for neighbour in current.neighbours:
+                if neighbour in self.bkwd_open_list:
+                    continue
+                self.bkwd_path_dict[neighbour] = current
+                if neighbour != self.end:
+                    self.bkwd_f_score[neighbour] = h(neighbour.get_pos(), self.start.get_pos())
+                    self.bkwd_heap.put((self.bkwd_f_score[neighbour], self.bkwd_count, neighbour))
+                    self.bkwd_open_list.append(neighbour)
+                    neighbour.make_open()
+
+            pygame.time.delay(CLOCK_DELAY)
+            self.draw()
+            if current != self.end:
+                current.make_closed()
+
+    def greedy_search(self):
+
+        while not self.bkwd_heap.empty() and not self.fwd_heap.empty():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit(0)
+            self.greedy_helper_algo("forward")
+            self.greedy_helper_algo("backward")
+
+            intersect = self.is_intersecting()
+            if intersect is not None:
+                self.animate_path(intersect)
+                self.start.make_start()
+                self.end.make_end()
+                return True

@@ -298,3 +298,21 @@ def bidirectional_a_star_search(draw, grid, start, end):
     """
     bs = bidirectional.InformedBidirectionalSearch(draw, grid, start, end)
     return bs.a_star_search()
+
+
+def bidirectional_greedy_search(draw, grid, start, end):
+    """
+    a function to implement bidirectional greedy best first search
+    it uses heuristic function to perform best first search from start and goal node simultaneously
+    it does not guarantee shortest path
+
+    It uses the bidirectional.py module's InformedBidirectionalSearch class
+    The actual algorithm implementation is written in that module
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :param grid: the list representation of the graph
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
+    """
+    bs = bidirectional.InformedBidirectionalSearch(draw, grid, start, end)
+    return bs.greedy_search()

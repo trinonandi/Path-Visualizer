@@ -65,7 +65,8 @@ def main_menu():
         button_astar = Button(50, 300, 250, 50, "A* Search")
         button_greedy = Button(50, 400, 250, 50, "Best First")
         button_bidiectional = Button(400, 100, 250, 50, "Bidirectional")
-        button_informed_bi = Button(400, 200, 250, 50, "Bidirectional A*")
+        button_astar_bi = Button(400, 200, 250, 50, "Bidirectional A*")
+        button_greedy_bi = Button(400, 300, 250, 50, "Bidirectional Greedy")
 
         if button_dfs.rectangle.collidepoint((mx, my)):
             button_dfs.color = BUTTON_HOVER_COLOR
@@ -89,17 +90,23 @@ def main_menu():
             if click:
                 message = game(WIN, WIDTH, algorithm=button_bidiectional.text)
 
-        if button_informed_bi.rectangle.collidepoint((mx, my)):
-            button_informed_bi.color = BUTTON_HOVER_COLOR
+        if button_astar_bi.rectangle.collidepoint((mx, my)):
+            button_astar_bi.color = BUTTON_HOVER_COLOR
             if click:
-                message = game(WIN, WIDTH, algorithm=button_informed_bi.text)
+                message = game(WIN, WIDTH, algorithm=button_astar_bi.text)
+
+        if button_greedy_bi.rectangle.collidepoint((mx, my)):
+            button_greedy_bi.color = BUTTON_HOVER_COLOR
+            if click:
+                message = game(WIN, WIDTH, algorithm=button_greedy_bi.text)
 
         button_dfs.draw_button()
         button_bfs.draw_button()
         button_astar.draw_button()
         button_greedy.draw_button()
         button_bidiectional.draw_button()
-        button_informed_bi.draw_button()
+        button_astar_bi.draw_button()
+        button_greedy_bi.draw_button()
 
         if message is not None:
             text = "Search Result : " + message
@@ -216,6 +223,9 @@ def game(win, width, algorithm):
                                                                 main_grid, start, end)
                     elif algorithm == "Bidirectional A*":
                         found = algorithms.bidirectional_a_star_search(lambda: grid.draw(win, main_grid, rows, width),
+                                                                       main_grid, start, end)
+                    elif algorithm == "Bidirectional Greedy":
+                        found = algorithms.bidirectional_greedy_search(lambda: grid.draw(win, main_grid, rows, width),
                                                                        main_grid, start, end)
 
                     if not found:
