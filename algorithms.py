@@ -154,6 +154,9 @@ def animate(path_dict, start, end, draw):
     while path[-1] != start:
         node = path_dict[path[-1]]
         path.append(node)
+
+    path = path[::-1]
+    for node in path:
         node.make_path()
         pygame.time.delay(CLOCK_DELAY)
         draw()
@@ -316,3 +319,45 @@ def bidirectional_greedy_search(draw, grid, start, end):
     """
     bs = bidirectional.InformedBidirectionalSearch(draw, grid, start, end)
     return bs.greedy_search()
+
+
+def dijkstra(draw, grid, start, end):
+    """
+    a function to implement dijkstra's algorithm
+    it is a blind search technique and the father of all pathfinding algorithms
+    it guarantees shortest path
+
+
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :param grid: the list representation of the graph
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
+    """
+    distance = {node: float("inf") for row in grid for node in row}
+    distance[start] = 0
+    path_dict = {}
+    heap = PriorityQueue()
+    heap.put((0, start))
+    while not heap.empty():
+        current = heap.get()[1]
+        if current == end:
+            animate(path_dict, start, end, draw)
+            start.make_start()
+            end.make_end()
+            return True
+
+        for neighbour in current.neighbours:
+
+            if distance[neighbour] > distance[current] + 1:
+                path_dict[neighbour] = current
+                distance[neighbour] = distance[current] + 1
+                heap.put((distance[neighbour], neighbour))
+                neighbour.make_open()
+
+        draw()
+        if current != start:
+            current.make_closed()
+
+    return False
+

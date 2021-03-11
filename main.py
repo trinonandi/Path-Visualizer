@@ -67,6 +67,7 @@ def main_menu():
         button_bidiectional = Button(400, 100, 250, 50, "Bidirectional")
         button_astar_bi = Button(400, 200, 250, 50, "Bidirectional A*")
         button_greedy_bi = Button(400, 300, 250, 50, "Bidirectional Greedy")
+        button_dijkstra = Button(400, 400, 250, 50, "Dijkstra")
 
         if button_dfs.rectangle.collidepoint((mx, my)):
             button_dfs.color = BUTTON_HOVER_COLOR
@@ -99,6 +100,10 @@ def main_menu():
             button_greedy_bi.color = BUTTON_HOVER_COLOR
             if click:
                 message = game(WIN, WIDTH, algorithm=button_greedy_bi.text)
+        if button_dijkstra.rectangle.collidepoint((mx, my)):
+            button_dijkstra.color = BUTTON_HOVER_COLOR
+            if click:
+                message = game(WIN, WIDTH, algorithm=button_dijkstra.text)
 
         button_dfs.draw_button()
         button_bfs.draw_button()
@@ -107,6 +112,7 @@ def main_menu():
         button_bidiectional.draw_button()
         button_astar_bi.draw_button()
         button_greedy_bi.draw_button()
+        button_dijkstra.draw_button()
 
         if message is not None:
             text = "Search Result : " + message
@@ -227,6 +233,9 @@ def game(win, width, algorithm):
                     elif algorithm == "Bidirectional Greedy":
                         found = algorithms.bidirectional_greedy_search(lambda: grid.draw(win, main_grid, rows, width),
                                                                        main_grid, start, end)
+                    elif algorithm == "Dijkstra":
+                        found = algorithms.dijkstra(lambda: grid.draw(win, main_grid, rows, width),
+                                                    main_grid, start, end)
 
                     if not found:
                         print("Not found")
