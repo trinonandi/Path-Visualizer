@@ -25,6 +25,24 @@ MENU_BACK_COLOR = (174, 230, 230)
 
 
 class Button:
+    """
+    class to create buttons in the main menu
+    -------------
+    data members
+    -------------
+    x: the x coordinate
+    y: the y coordinate
+    width: width of the button
+    height: height of the button
+    text: the text to be written on the button
+    rectangle: a pygame rectangle drawn from the x, y, width and height data members
+    color: color of the button
+    -------------
+    methods
+    -------------
+    set_text: blit the text on the button
+    draw_button: draws the button on the window
+    """
     def __init__(self, x, y, width, height, text=" "):
         self.x = x
         self.y = y
@@ -45,6 +63,16 @@ class Button:
 
 
 def draw_text(text, local_font, color, surface, x, y):
+    """
+    draws text on the window
+    :param text: the string to be written
+    :param local_font: pygame font object
+    :param color: text color
+    :param surface: the window on which we will blit it
+    :param x: x coordinate
+    :param y: y coordinate
+    :return: None
+    """
     text_obj = local_font.render(text, 1, color)
     text_rect = text_obj.get_rect()
     text_rect.topleft = (x, y)
@@ -52,23 +80,30 @@ def draw_text(text, local_font, color, surface, x, y):
 
 
 def main_menu():
-    click = False
-    message = None
+    """
+    function to show the main menu and interact with button clicks
+    it will be the only function called from this main.py
+    :return: None
+    """
+    click = False   # checks any mouse click event
+    message = None  # message in case path not found
     while True:
         WIN.fill(MENU_BACK_COLOR)
         draw_text('Choose Algorithm', FONT, BUTTON_COLOR, WIN, 50, 50)
 
-        mx, my = pygame.mouse.get_pos()
+        mx, my = pygame.mouse.get_pos()  # getting mouse coordinates
 
+        # all the button objects
         button_dfs = Button(50, 100, 250, 50, "DFS")
         button_bfs = Button(50, 200, 250, 50, "BFS")
         button_astar = Button(50, 300, 250, 50, "A* Search")
         button_greedy = Button(50, 400, 250, 50, "Best First")
-        button_bidiectional = Button(400, 100, 250, 50, "Bidirectional")
+        button_bidirectional = Button(400, 100, 250, 50, "Bidirectional")
         button_astar_bi = Button(400, 200, 250, 50, "Bidirectional A*")
         button_greedy_bi = Button(400, 300, 250, 50, "Bidirectional Greedy")
         button_dijkstra = Button(400, 400, 250, 50, "Dijkstra")
 
+        # all the button object's collision checking
         if button_dfs.rectangle.collidepoint((mx, my)):
             button_dfs.color = BUTTON_HOVER_COLOR
             if click:
@@ -86,10 +121,10 @@ def main_menu():
             if click:
                 message = game(WIN, WIDTH, algorithm=button_greedy.text)
 
-        if button_bidiectional.rectangle.collidepoint((mx, my)):
-            button_bidiectional.color = BUTTON_HOVER_COLOR
+        if button_bidirectional.rectangle.collidepoint((mx, my)):
+            button_bidirectional.color = BUTTON_HOVER_COLOR
             if click:
-                message = game(WIN, WIDTH, algorithm=button_bidiectional.text)
+                message = game(WIN, WIDTH, algorithm=button_bidirectional.text)
 
         if button_astar_bi.rectangle.collidepoint((mx, my)):
             button_astar_bi.color = BUTTON_HOVER_COLOR
@@ -105,16 +140,17 @@ def main_menu():
             if click:
                 message = game(WIN, WIDTH, algorithm=button_dijkstra.text)
 
+        # drawing all the buttons on the window
         button_dfs.draw_button()
         button_bfs.draw_button()
         button_astar.draw_button()
         button_greedy.draw_button()
-        button_bidiectional.draw_button()
+        button_bidirectional.draw_button()
         button_astar_bi.draw_button()
         button_greedy_bi.draw_button()
         button_dijkstra.draw_button()
 
-        if message is not None:
+        if message is not None:     # path not found
             text = "Search Result : " + message
             draw_text(text, FONT, BUTTON_COLOR, WIN, 50, 650)
 
@@ -136,14 +172,22 @@ def main_menu():
 
 
 def game(win, width, algorithm):
+    """
+    function to start the game grid along with appropriate algorithm presets
+    it will be called from inside the main_menu() function
+    :param win: the pygame window
+    :param width: the width of the screen
+    :param algorithm: String. The algorithm name to be executed in the grid
+    :return: String containing path not found message if path is not found else None
+    """
     clock = pygame.time.Clock()
     rows = ROW
-    main_grid = grid.make_grid(rows, width)
+    main_grid = grid.make_grid(rows, width)     # the main grid in a list of list of Node objects format
 
     start = None  # holds the start node
     end = None  # holds the end node
 
-    algo_started = False
+    algo_started = False    # checks if the algorithm has started
     run = True  # represents if the game loop is running or not
     while run:
         clock.tick(FPS)
@@ -152,7 +196,7 @@ def game(win, width, algorithm):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit(0)
-            if pygame.mouse.get_pressed(num_buttons=3)[0]:  # left click
+            if pygame.mouse.get_pressed(num_buttons=3)[0]:  # left click adds start, goal and wall respectively
                 # num_buttons = 3 for 3 button mouse
                 pos = pygame.mouse.get_pos()
                 row, col = grid.get_clicked_node(pos, rows, width)
@@ -166,7 +210,7 @@ def game(win, width, algorithm):
                 elif node != end and node != start:
                     node.make_wall()
 
-            elif pygame.mouse.get_pressed(num_buttons=3)[2]:  # right click
+            elif pygame.mouse.get_pressed(num_buttons=3)[2]:  # right click removes any of start, goal or wall
                 pos = pygame.mouse.get_pos()
                 row, col = grid.get_clicked_node(pos, rows, width)
                 node = main_grid[row][col]
@@ -211,7 +255,8 @@ def game(win, width, algorithm):
                         for node in row:
                             node.update_neighbour(main_grid)
 
-                    found = False
+                    found = False   # holds the boolean return of the algorithm functions
+
                     if algorithm == "A* Search":
                         found = algorithms.a_star(lambda: grid.draw(win, main_grid, rows, width), main_grid, start, end)
                     elif algorithm == "BFS":
@@ -237,7 +282,7 @@ def game(win, width, algorithm):
                         found = algorithms.dijkstra(lambda: grid.draw(win, main_grid, rows, width),
                                                     main_grid, start, end)
 
-                    if not found:
+                    if not found:   # path is not found
                         print("Not found")
                         message = "Path Not Found"
                         pygame.time.delay(1000)

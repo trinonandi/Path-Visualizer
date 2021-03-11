@@ -32,8 +32,8 @@ def a_star(draw, grid, start, end):
     count = 0
     heap = PriorityQueue()
     heap.put((0, count, start))
-    open_set = {start}
-    path_dict = dict()
+    open_list = []
+    path_dict = {}
 
     g_score = {node: float("inf") for row in grid for node in row}
     g_score[start] = 0
@@ -48,27 +48,26 @@ def a_star(draw, grid, start, end):
                 exit(0)
 
         current = heap.get()[2]  # returns the Node object from the tuple
-        open_set.remove(current)
 
         if current == end:  # goal node found
-            reconstruct_path(path_dict, end, draw)
+            animate(path_dict, start, end, draw)
             # remaking the start and end node as they will be removed by reconstruct_path()
             end.make_end()
             start.make_start()
             return True
 
         for neighbour in current.neighbours:
-            temp_g_score = g_score[current] + 1
-            if temp_g_score < g_score[neighbour]:  # making neighbour a path node
-                path_dict[neighbour] = current
+            if neighbour in open_list:
+                continue
+            path_dict[neighbour] = current
+            if neighbour != start:
+                count += 1
+                temp_g_score = g_score[current] + 1
                 g_score[neighbour] = temp_g_score  # g(x)
                 f_score[neighbour] = temp_g_score + h(neighbour.get_pos(), end.get_pos())  # f(x) = g(x) + h(x)
-
-                if neighbour not in open_set:  # opening the neighbour
-                    count += 1
-                    heap.put((f_score[neighbour], count, neighbour))
-                    open_set.add(neighbour)
-                    neighbour.make_open()
+                heap.put((f_score[neighbour], count, neighbour))
+                open_list.append(neighbour)
+                neighbour.make_open()
 
         pygame.time.delay(CLOCK_DELAY)
         draw()
@@ -325,9 +324,8 @@ def dijkstra(draw, grid, start, end):
     """
     a function to implement dijkstra's algorithm
     it is a blind search technique and the father of all pathfinding algorithms
+    we have used a heap to implement it
     it guarantees shortest path
-
-
     :param draw: a function that refreshes the pygame window every time a node's color is changed
     :param grid: the list representation of the graph
     :param start: starting node
@@ -360,4 +358,3 @@ def dijkstra(draw, grid, start, end):
             current.make_closed()
 
     return False
-

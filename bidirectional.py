@@ -157,6 +157,23 @@ def h(p1, p2):
 
 
 class InformedBidirectionalSearch:
+    """
+    A class that implements bidirectional greedy and bidirectional A* search
+    ----------------
+    data fields
+    ----------------
+    all the fwd preceded data members are for forward direction search that begins from start node
+    all the bkwd preceded data members are for backward direction search that begins from the goal node
+    ----------------
+    methods
+    ----------------
+    is_intersecting: check if the two search path intersected or not
+    animate_path: animates path from start to goal is found
+    a_star_helper_algo: it performs each iteration operations for A*. It performs for both forward and backward search
+    a_star_search: the actual A* search method that is meant to be called through objects
+    greedy_helper_algo: it performs each iteration tasks for greedy, Applicable for both backward and forward search
+    greedy_search: the actual greedy search method that is meant to be called through objects
+    """
     def __init__(self, draw, grid, start, end):
         self.start = start
         self.end = end
@@ -198,6 +215,11 @@ class InformedBidirectionalSearch:
         return None
 
     def a_star_helper_algo(self, direction="forward"):
+        """
+        helper method for A* search
+        :param direction: String determining the direction of search
+        :return: None
+        """
         if direction == "forward":
             current = self.fwd_heap.get()[2]
             for neighbour in current.neighbours:
@@ -241,6 +263,10 @@ class InformedBidirectionalSearch:
                 current.make_closed()
 
     def a_star_search(self):
+        """
+        method to perform bidirectional A* search
+        :return: Boolean True if path found else False
+        """
 
         while not self.bkwd_heap.empty() and not self.fwd_heap.empty():
             for event in pygame.event.get():
@@ -280,6 +306,11 @@ class InformedBidirectionalSearch:
             self.draw()
 
     def greedy_helper_algo(self, direction="forward"):
+        """
+        helper function for greedy best first search
+        :param direction: String determines the direction of search
+        :return: None
+        """
         if direction == "forward":
             current = self.fwd_heap.get()[2]
             for neighbour in current.neighbours:
@@ -318,7 +349,10 @@ class InformedBidirectionalSearch:
                 current.make_closed()
 
     def greedy_search(self):
-
+        """
+        method to perform bidirectional greedy best first search
+        :return: Boolean True if path found else False
+        """
         while not self.bkwd_heap.empty() and not self.fwd_heap.empty():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
