@@ -78,19 +78,44 @@ def a_star(draw, grid, start, end):
     return False
 
 
-def reconstruct_path(path_dict, current, draw):
+def dijkstra(draw, grid, start, end):
     """
-    backtracks through the path_dict and draws the path
-    :param path_dict: the dict having all the path nodes from start to goal
-    :param current: current node
+    a function to implement dijkstra's algorithm
+    it is a blind search technique and the father of all pathfinding algorithms
+    we have used a heap to implement it
+    it guarantees shortest path
     :param draw: a function that refreshes the pygame window every time a node's color is changed
-    :return: None
+    :param grid: the list representation of the graph
+    :param start: starting node
+    :param end: goal node
+    :return: boolean True if a path exists and False if no path exists
     """
-    while current in path_dict:
-        current = path_dict[current]
-        current.make_path()
-        pygame.time.delay(CLOCK_DELAY)
+    distance = {node: float("inf") for row in grid for node in row}
+    distance[start] = 0
+    path_dict = {}
+    heap = PriorityQueue()
+    heap.put((0, start))
+    while not heap.empty():
+        current = heap.get()[1]
+        if current == end:
+            animate(path_dict, start, end, draw)
+            start.make_start()
+            end.make_end()
+            return True
+
+        for neighbour in current.neighbours:
+
+            if distance[neighbour] > distance[current] + 1:
+                path_dict[neighbour] = current
+                distance[neighbour] = distance[current] + 1
+                heap.put((distance[neighbour], neighbour))
+                neighbour.make_open()
+
         draw()
+        if current != start:
+            current.make_closed()
+
+    return False
 
 
 def breadth_first_search(draw, start, end):
@@ -138,27 +163,6 @@ def breadth_first_search(draw, start, end):
             current.make_closed()
 
     return False
-
-
-def animate(path_dict, start, end, draw):
-    """
-    a function that animates the path by backtracking the path_dict
-    :param path_dict: a dictionary that holds the node as key and its parent as value
-    :param start: starting node
-    :param end: goal node
-    :param draw: a function that refreshes the pygame window every time a node's color is changed
-    :return: None
-    """
-    path = [end]
-    while path[-1] != start:
-        node = path_dict[path[-1]]
-        path.append(node)
-
-    path = path[::-1]
-    for node in path:
-        node.make_path()
-        pygame.time.delay(CLOCK_DELAY)
-        draw()
 
 
 def depth_first_search(draw, start, end):
@@ -320,41 +324,22 @@ def bidirectional_greedy_search(draw, grid, start, end):
     return bs.greedy_search()
 
 
-def dijkstra(draw, grid, start, end):
+def animate(path_dict, start, end, draw):
     """
-    a function to implement dijkstra's algorithm
-    it is a blind search technique and the father of all pathfinding algorithms
-    we have used a heap to implement it
-    it guarantees shortest path
-    :param draw: a function that refreshes the pygame window every time a node's color is changed
-    :param grid: the list representation of the graph
+    a function that animates the path by backtracking the path_dict
+    :param path_dict: a dictionary that holds the node as key and its parent as value
     :param start: starting node
     :param end: goal node
-    :return: boolean True if a path exists and False if no path exists
+    :param draw: a function that refreshes the pygame window every time a node's color is changed
+    :return: None
     """
-    distance = {node: float("inf") for row in grid for node in row}
-    distance[start] = 0
-    path_dict = {}
-    heap = PriorityQueue()
-    heap.put((0, start))
-    while not heap.empty():
-        current = heap.get()[1]
-        if current == end:
-            animate(path_dict, start, end, draw)
-            start.make_start()
-            end.make_end()
-            return True
+    path = [end]
+    while path[-1] != start:
+        node = path_dict[path[-1]]
+        path.append(node)
 
-        for neighbour in current.neighbours:
-
-            if distance[neighbour] > distance[current] + 1:
-                path_dict[neighbour] = current
-                distance[neighbour] = distance[current] + 1
-                heap.put((distance[neighbour], neighbour))
-                neighbour.make_open()
-
+    path = path[::-1]
+    for node in path:
+        node.make_path()
+        pygame.time.delay(CLOCK_DELAY)
         draw()
-        if current != start:
-            current.make_closed()
-
-    return False
