@@ -22,7 +22,8 @@ MAIN_CLOCK = pygame.time.Clock()  # main clock
 BUTTON_COLOR = (10, 4, 60)
 BUTTON_HOVER_COLOR = (254, 152, 1)
 MENU_BACK_COLOR = (174, 230, 230)
-
+INFO_COLOR = (204, 14, 116)
+INFO_MENU_BACK_COLOR = (253, 207, 223)
 
 class Button:
     """
@@ -79,6 +80,43 @@ def draw_text(text, local_font, color, surface, x, y):
     surface.blit(text_obj, text_rect)
 
 
+def info_menu(win):
+    """
+    function to render the info page containing instructions to run the app
+    :param win: the pygame window
+    :return: None
+    """
+    run = True
+    while run:
+        win.fill(grid.WHITE)
+        draw_text('Select an algorithm', FONT, BUTTON_COLOR, WIN, 50, 50)
+        draw_text('LEFT CLICK to make a node START, GOAL or WALL', FONT, BUTTON_COLOR, WIN, 50, 80)
+        draw_text('The first two clicks will be START and GOAL', FONT, BUTTON_COLOR, WIN, 50, 110)
+        draw_text('RIGHT CLICK on a node to clear it', FONT, BUTTON_COLOR, WIN, 50, 140)
+        draw_text('Press SPACE to start the algorithm', FONT, BUTTON_COLOR, WIN, 50, 170)
+        draw_text('Press ARROW UP or LEFT to decrease grid size', FONT, BUTTON_COLOR, WIN, 50, 200)
+        draw_text('Press ARROW DOWN or RIGHT to increase grid size', FONT, BUTTON_COLOR, WIN, 50, 230)
+        draw_text('Press R to reset the grid', FONT, BUTTON_COLOR, WIN, 50, 260)
+        draw_text('Press ESC to return back to main menu', FONT, BUTTON_COLOR, WIN, 50, 290)
+
+        draw_text('The golden node is START', FONT, grid.START_COLOR, WIN, 50, 380)
+        draw_text('The red node is GOAL', FONT, grid.GOAL_COLOR, WIN, 50, 410)
+        draw_text('The gray nodes are WALL', FONT, grid.WALL_COLOR, WIN, 50, 440)
+        draw_text('The navy blue nodes are path', FONT, grid.PATH_COLOR, WIN, 50, 470)
+        draw_text('The light cyan nodes are closed', FONT, grid.CLOSED_COLOR, WIN, 50, 500)
+        draw_text('The deep cyan nodes are open', FONT, grid.OPEN_COLOR, WIN, 50, 530)
+
+        draw_text('This application is created by Trinanjan Nandi', FONT, INFO_COLOR, WIN, 200, 600)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    run = False
+        pygame.display.update()
+        MAIN_CLOCK.tick(FPS)
+
 def main_menu():
     """
     function to show the main menu and interact with button clicks
@@ -92,8 +130,9 @@ def main_menu():
         draw_text('Choose Algorithm', FONT, BUTTON_COLOR, WIN, 50, 50)
 
         mx, my = pygame.mouse.get_pos()  # getting mouse coordinates
-
         # all the button objects
+        button_info = Button(600, 30, 50, 50, "Info")
+        button_info.color = INFO_COLOR
         button_dfs = Button(50, 100, 250, 50, "DFS")
         button_bfs = Button(50, 200, 250, 50, "BFS")
         button_astar = Button(50, 300, 250, 50, "A* Search")
@@ -104,6 +143,10 @@ def main_menu():
         button_dijkstra = Button(400, 400, 250, 50, "Dijkstra")
 
         # all the button object's collision checking
+        if button_info.rectangle.collidepoint((mx, my)):
+            button_info.color = BUTTON_HOVER_COLOR
+            if click:
+                info_menu(WIN)
         if button_dfs.rectangle.collidepoint((mx, my)):
             button_dfs.color = BUTTON_HOVER_COLOR
             if click:
@@ -141,6 +184,7 @@ def main_menu():
                 message = game(WIN, WIDTH, algorithm=button_dijkstra.text)
 
         # drawing all the buttons on the window
+        button_info.draw_button()
         button_dfs.draw_button()
         button_bfs.draw_button()
         button_astar.draw_button()
