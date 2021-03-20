@@ -21,7 +21,7 @@ Then I implemented the wall, start and goal node distinctions and implemented th
 - Bidirectional Greedy Best First Search  (heuristic)
 - Bidirectional A* search  (heuristic)
 
-For the heuristic function, I chose the Manhattan Distance 
+For the heuristic function, I chose the Manhattan Distance.
 Each node in the grid can be traversed only Left, Right, Up and Down. No diagonal movement is allowed
 
 ## How to run
@@ -45,11 +45,11 @@ Right Click on a node to clear it.
  ![Start](https://via.placeholder.com/15/16A596/000000?text=+) Open Node
  ![Start](https://via.placeholder.com/15/AEE6E6/000000?text=+) Closed Node
 
-Press The ARROW UP or ARROW LEFT key to decrease the grid size
-Press The ARROW DOWN or ARROW RIGHT key to increase the grid size
-Press The SPACE key to start the algorithm
-Press The R key to clear the grid
-Press The ESC key to return to main menu
+Press The ARROW UP or ARROW LEFT key to decrease the grid size.
+Press The ARROW DOWN or ARROW RIGHT key to increase the grid size.
+Press The SPACE key to start the algorithm.
+Press The R key to clear the grid.
+Press The ESC key to return to main menu.
 
 ## Demo
 <img src="https://github.com/trinonandi/Path-Visualizer/blob/master/md_assets/demo.gif" width="500" height="500" />
