@@ -2,7 +2,7 @@
 A pathfinding algorithm visualizer made with Python and Pygame
 
 ## Inspiration
-I was studying various pathfinding algorithms as a part of my 5th semester B-tech subject Artificial Intelligence. But we had no hands on lab to try out those algorithms and analyze the results of different algorithms. So I decided to build up this application that visualizes them on three different sized grids with custom maze.
+I was studying various pathfinding algorithms as a part of my 5th semester B-tech subject Artificial Intelligence. But I did not have any hands-on lab to try out those algorithms and analyze the results. So I decided to build this application that visualizes them on three different sized grids with custom maze.
 
 ## How I made it 
 I used a simple python game development module called Pygame to design the GUI. Then I created 3 square grids of size
@@ -10,7 +10,7 @@ I used a simple python game development module called Pygame to design the GUI. 
 2. 28 x 28 (standard)
 3. 35 x 35 (large)
 
-Then I implemented the wall, start and goal node distinctions and implemented the following algorithms
+After that, I designed the wall, start and goal node distinctions and implemented the following algorithms:
 
 - Depth First Search
 - Breadth First Search
@@ -22,10 +22,10 @@ Then I implemented the wall, start and goal node distinctions and implemented th
 - Bidirectional A* search  (heuristic)
 
 For the heuristic function, I chose the Manhattan Distance.
-Each node in the grid can be traversed only Left, Right, Up and Down. No diagonal movement is allowed
+Assumption : Each node in the grid can be traversed only Left, Right, Up and Down. No diagonal movement is allowed
 
 ## How to run
-There are three ways to run the application. Download the files as zip or clone the directory then follow any of the three processes
+There are three ways to run the application. Download the files as zip or clone the directory, then follow any of the three processes
  
 1. Install Python 3 and download Pygame as  `pip install pygame`. Then run the `main.py` file as `python main.py` 
 2. On a Windows PC double click on the `Visualizer.exe` file 
@@ -34,7 +34,7 @@ There are three ways to run the application. Download the files as zip or clone 
 ## Instructions 
 All these application related Instructions can be found inside the `info` tab on the app main menu.
 
-Left Click on a node to make it Start, Goal or Wall. The first Click will be set to start, the next one will be set to Goal. After that the clicks will set to Walls. 
+Left Click on a node to make it Start, Goal or Wall. The first clicked node will be set to Start, the next one will be set to Goal. After that the clicked nodes will be set to Walls. 
 Right Click on a node to clear it.
 
  ![Start](https://via.placeholder.com/15/FE9801/000000?text=+) Start Node
